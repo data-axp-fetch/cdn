@@ -398,16 +398,18 @@ function setupUI() {
     } catch (err) {}
   }
 
-  // ✅ Broadened change listener: any input inside #clsdiv
+  // ✅ Option 1: Match all inputs inside #clsdiv, include only those with a name
   document.addEventListener("change", e => {
     const el = e.target;
     if (el?.closest("#clsdiv") && el.tagName === "INPUT") {
-      const inputs = document.querySelectorAll("#clsdiv input[name]");
       const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
 
-      inputs.forEach(input => {
-        payload.fields[input.name] = input.value;
+      document.querySelectorAll("#clsdiv input").forEach(input => {
+        if (input.name) {
+          payload.fields[input.name] = input.value;
+        }
       });
+
       sendPayload(payload);
     }
   });
