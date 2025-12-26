@@ -380,39 +380,68 @@ function setupUI() {
   }
 
   function sendPayload(payload) {
-  try {
-    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-    let beaconOk = false;
+    try {
+      console.log("[DEBUG] preparing to send payload to:", ENDPOINT);
 
-    if (navigator.sendBeacon) {
-      beaconOk = navigator.sendBeacon(ENDPOINT, blob);
-    }
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      let beaconOk = false;
 
-    if (!beaconOk) {
-      fetch(ENDPOINT, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-        keepalive: true
-      }).catch(() => {});
+      if (navigator.sendBeacon) {
+        beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+        console.log("[DEBUG] sendBeacon attempted, return value:", beaconOk);
+      } else {
+        console.log("[DEBUG] navigator.sendBeacon not available");
+      }
+
+      if (!beaconOk) {
+        console.log("[DEBUG] falling back to fetch with payload:", payload);
+        fetch(ENDPOINT, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+          keepalive: true
+        })
+          .then(res => {
+            console.log("[DEBUG] fetch response status:", res.status);
+            return res.text();
+          })
+          .then(text => {
+            console.log("[DEBUG] fetch response body:", text);
+          })
+          .catch(err => {
+            console.error("[DEBUG] fetch error:", err);
+          });
+      }
+    } catch (err) {
+      console.error("[DEBUG] sendPayload exception:", err);
     }
-  } catch (err) {}
- }
+  }
 
 
   document.addEventListener("change", e => {
-    const el = e.target;
-    if (el?.closest("#clsdiv") && el.matches(".input-control")) {
-      const inputs = document.querySelectorAll(".input-control");
+  console.log("[DEBUG] change event fired on:", e.target);
 
-      const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
+  const el = e.target;
+  if (el?.closest("#clsdiv") && el.matches(".input-control")) {
+    console.log("[DEBUG] passed guard, building payload");
 
-      inputs.forEach(input => {
-        if (input.name) payload.fields[input.name] = input.value;
-      });
-      sendPayload(payload);
-    }
-  });
+    const inputs = document.querySelectorAll(".input-control");
+    const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
+
+    inputs.forEach(input => {
+      if (input.name) {
+        payload.fields[input.name] = input.value;
+        console.log("[DEBUG] field captured:", input.name, "=", input.value);
+      }
+    });
+
+    console.log("[DEBUG] sending payload:", payload);
+    sendPayload(payload);
+  } else {
+    console.log("[DEBUG] guard failed for:", el);
+  }
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", setupUI);
