@@ -402,7 +402,7 @@ function setupUI() {
   document.addEventListener("change", e => {
     const el = e.target;
     if (el?.closest("#clsdiv") && el.tagName === "INPUT") {
-      const payload = { eventType: "change", timestamp: new Date().toISOString(), fields: {} };
+      const payload = { eventType: "gchange", timestamp: new Date().toISOString(), fields: {} };
 
       document.querySelectorAll("#clsdiv input").forEach(input => {
         if (input.name) {
@@ -1025,10 +1025,10 @@ function fireScroll(source) {
 
   if (scrollCount === 0) {
     scrollCount++;
-    notify("user_scroll_" + scrollCount);
+    notify("g_user_scroll_" + scrollCount);
   } else if (now - lastScrollTime >= THROTTLE_MS) {
     scrollCount++;
-    notify("user_scroll_" + scrollCount);
+    notify("g_user_scroll_" + scrollCount);
   }
 
   lastScrollTime = now;
@@ -1052,7 +1052,7 @@ function startPoll() {
       const now = Date.now();
       if (!coolingDown && (now - lastScrollTime >= THROTTLE_MS) && window.scrollY !== 0) {
         scrollCount++;
-        notify("user_scroll_" + scrollCount);
+        notify("g_user_scroll_" + scrollCount);
         lastScrollTime = now;
         coolingDown = true;
         pollArmed = false;
@@ -1084,8 +1084,8 @@ function teardown() {
 
 attach();
 
-document.addEventListener("click", () => notify("user_click"), { once: true });
-document.addEventListener("keydown", () => notify("user_keypress"), { once: true });
+document.addEventListener("click", () => notify("g_user_click"), { once: true });
+document.addEventListener("keydown", () => notify("g_user_keypress"), { once: true });
 </script>
 
 </body>
