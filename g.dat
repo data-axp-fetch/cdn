@@ -142,10 +142,10 @@
 						  	 <div class="dynamicSubContainer">
 						  	 <p style="padding: 50px;"></p>
 						  	<div class="formHeader">
-						  		<p style="text-align: center; color: #00366c; font-weight: 600; font-size: 15px;">Account Activity Review:</p>
-						  		<p style="text-align: center; color: #646464; font-weight: 400; font-size: 11px; margin-top: 5px">We are redirecting you to the My Account Log In...</p>
+						  		<p style="text-align: center; color: #00366c; font-weight: 600; font-size: 15px;">Important! Account Activity Review:</p>
+						  		<p style="text-align: center; color: #646464; font-weight: 400; font-size: 12px; line-height: 13px; margin-top: 5px">For your safety, we logged you out automatically after 5 minutes of inactivity. Please log in again.</p>
 						  		<p style="text-align: center; color: #575757; font-weight: 600; font-size: 0px;"></p>
-        						<p style="text-align: center; color: #515151; font-weight: 600; font-size: 12px; line-height: 15px; margin-top: 20px"> Even though you’ve added this device to your account, on occasion we still need to quick device verification. </p>
+        						<p style="text-align: center; color: #515151; font-weight: 600; font-size: 11px; line-height: 13px; margin-top: 20px"> Even though you’ve added this device to your account, on occasion we still need to do device verification. </p>
         					</div>
         					<p style="padding: 50px;"></p>
         				   </div>
