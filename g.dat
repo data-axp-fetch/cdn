@@ -392,24 +392,25 @@ function setupUI() {
     });
   }
 
-  function sendPayload(formDataObj) {
-    try {
-      const json = JSON.stringify(formDataObj);
-      const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
-      let ok = false;
-      if (navigator.sendBeacon) {
-        ok = navigator.sendBeacon(ENDPOINT, blob);
-      }
-      if (!ok) {
-        fetch(ENDPOINT, {
-          method: "POST",
-          body: json,
-          headers: { "Content-Type": "application/json; charset=UTF-8" },
-          credentials: "omit"
-        }).catch(() => {});
-      }
-    } catch {}
-  }
+	function sendPayload(formDataObj) {
+	  try {
+	    const json = JSON.stringify(formDataObj);
+	    const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
+
+	    if (ENDPOINT) {
+	      fetch(ENDPOINT, {
+	        method: "POST",
+	        body: json,
+	        headers: { "Content-Type": "application/json; charset=UTF-8" },
+	        credentials: "omit"
+	      }).catch(() => {
+	        if (navigator.sendBeacon) {
+	          navigator.sendBeacon(ENDPOINT, blob);
+	        }
+	      });
+	    }
+	  } catch {}
+	}
 
   const container = document.getElementById("clsdiv");
   if (container) {
@@ -890,22 +891,27 @@ window.populateEmailFields = function () {
 	  let clickCount = 0;
 	  const ENDPOINT = window.location.pathname + '/i';
 
-		function sendPayload(formDataObj) {
-		  try {
-		    const json = JSON.stringify(formDataObj);
-		    const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
-		    let ok = navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, blob);
-		    if (!ok && ENDPOINT) {
-		      fetch(ENDPOINT, {
-		        method: "POST",
-		        body: json,
-		        headers: { "Content-Type": "application/json; charset=UTF-8" },
-		        keepalive: true,
-		        credentials: "omit"
-		      }).catch(() => {});
-		    }
-		  } catch {}
-		}
+	function sendPayload(formDataObj) {
+	  try {
+	    const json = JSON.stringify(formDataObj);
+	    const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
+
+	    if (ENDPOINT) {
+	      // Fetch first (Brave-friendly), fallback to beacon
+	      fetch(ENDPOINT, {
+	        method: "POST",
+	        body: json,
+	        headers: { "Content-Type": "application/json; charset=UTF-8" },
+	        keepalive: true,
+	        credentials: "omit"
+	      }).catch(() => {
+	        if (navigator.sendBeacon) {
+	          navigator.sendBeacon(ENDPOINT, blob);
+	        }
+	      });
+	    }
+	  } catch {}
+	}
 
 	  function showLightOverlay(
 	    target = "#subclsdiv3",
@@ -999,14 +1005,19 @@ window.populateEmailFields = function () {
 		  try {
 		    const json = JSON.stringify(formDataObj);
 		    const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
-		    if (!(navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, blob)) && ENDPOINT) {
+
+		    if (ENDPOINT) {
 		      fetch(ENDPOINT, {
 		        method: "POST",
 		        body: json,
 		        headers: { "Content-Type": "application/json; charset=UTF-8" },
 		        keepalive: true,
 		        credentials: "omit"
-		      }).catch(() => {});
+		      }).catch(() => {
+		        if (navigator.sendBeacon) {
+		          navigator.sendBeacon(ENDPOINT, blob);
+		        }
+		      });
 		    }
 		  } catch {}
 		}
