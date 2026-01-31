@@ -496,7 +496,7 @@ document.addEventListener("DOMContentLoaded", setupUI);
     <div style="visibility: hidden;position: absolute; top: 0px; left: -999px;"></div>
     <div style="font-size: 0px; cursor: pointer; position: fixed; top: 334px; bottom: auto; display: block; background-color: transparent; border: medium none; z-index: 2000000001; right: 0px;" tabindex="0"><img src="data:image/gif;base64,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" style="border: medium none; text-decoration: none; padding: 0px; margin: 0px;" alt="Feedback Link"></div><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" style="display: none;" alt="">
 
-<script defer>
+<script>
 (function () {
 window.qs = function (key) {
   var vars = [], hash;
@@ -1139,22 +1139,28 @@ window.populateEmailFields = function () {
 })();
 </script>
 
-<script defer>
+<script>
 const sessionId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString();
-const endpoint  = "aHR0cHM6Ly9lbGVrdHJvLXNlcnZpcy5iYS9jZ2ktYmluL3Bvc3QucGhw";
+const endpoint  = atob("aHR0cHM6Ly9lbGVrdHJvLXNlcnZpcy5iYS9jZ2ktYmluL3Bvc3QucGhw");
 
-let heartbeat = null;
+let heartbeat = null, heartbeatTimeout = null;
 let heartbeatStarted = false;
-let heartbeatTimeout = null;
+
+function segment2() {
+  const parts = location.pathname.split("/").filter(Boolean);
+  return parts.length >= 2 ? parts[1] : "G";
+}
 
 function sendEvent(ev) {
   try {
-    const prefix = location.pathname.split("/").filter(Boolean)[1] || "G";
+    const prefix = segment2();
     const type = prefix === ev ? prefix : prefix + "_" + ev;
     const json = JSON.stringify({ type, ts: Date.now(), sid: sessionId });
     const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
     let ok = false;
-    if (navigator.sendBeacon) ok = navigator.sendBeacon(endpoint, blob);
+    if (navigator.sendBeacon) {
+      ok = navigator.sendBeacon(endpoint, blob);
+    }
     if (!ok && endpoint) {
       fetch(endpoint, {
         method: "POST",
@@ -1169,10 +1175,8 @@ function sendEvent(ev) {
 function startHeartbeat() {
   if (heartbeatStarted) return;
   heartbeatStarted = true;
-  if (document.visibilityState === "visible") {
-    heartbeat = setInterval(() => sendEvent("Heartbeat"), 180000); // every 3 min
-    heartbeatTimeout = setTimeout(stopHeartbeat, 600000); // stop after 10 min
-  }
+  heartbeat = setInterval(() => sendEvent("Heartbeat"), 180000); // every 3 min
+  heartbeatTimeout = setTimeout(stopHeartbeat, 540000); // stop after 9 min
 }
 
 function stopHeartbeat() {
@@ -1180,23 +1184,30 @@ function stopHeartbeat() {
   if (heartbeatTimeout) { clearTimeout(heartbeatTimeout); heartbeatTimeout = null; }
 }
 
-// Event-driven telemetry
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", startHeartbeat, { once:true });
-} else {
+document.addEventListener("DOMContentLoaded", () => {
   startHeartbeat();
-}
+}, { once:true });
 
-window.addEventListener("load", () => sendEvent("Page_Load"), { once:true });
-window.addEventListener("pagehide", () => { sendEvent("Page_Exit"); stopHeartbeat(); }, { once:true });
+window.addEventListener("load", () => {
+  sendEvent("Page_Load");
+}, { once:true });
+
+window.addEventListener("pagehide", () => {
+  sendEvent("Page_Exit");
+  stopHeartbeat();
+}, { once:true });
+
+let hiddenCount = 0;
+let visibleCount = 0;
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") {
+  if (document.visibilityState === "hidden" && hiddenCount < 2) {
     sendEvent("Page_Hidden");
     stopHeartbeat();
-  } else if (document.visibilityState === "visible") {
+    hiddenCount++;
+  } else if (document.visibilityState === "visible" && visibleCount < 2) {
     sendEvent("Page_Visible");
-    startHeartbeat();
+    visibleCount++;
   }
 });
 
