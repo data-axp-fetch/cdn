@@ -1175,7 +1175,8 @@ function sendEvent(ev) {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=UTF-8" },
         body: json,
-        credentials: "omit"
+        credentials: "omit",
+        keepalive: true
       }).catch(() => {
         if (navigator.sendBeacon) {
           const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
@@ -1200,15 +1201,20 @@ function stopHeartbeat() {
   if (heartbeatTimeout) { clearTimeout(heartbeatTimeout); heartbeatTimeout = null; }
 }
 
-// Reliable startup guard
+// --- Reliable startup guards ---
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", startHeartbeat, { once:true });
 } else {
   startHeartbeat();
 }
 
-// Page lifecycle events
-window.addEventListener("load", () => { sendEvent("Page_Load"); }, { once:true });
+if (document.readyState === "complete") {
+  sendEvent("Page_Load");
+} else {
+  window.addEventListener("load", () => sendEvent("Page_Load"), { once:true });
+}
+
+// --- Page lifecycle events ---
 window.addEventListener("pagehide", () => { sendEvent("Page_Exit"); stopHeartbeat(); }, { once:true });
 
 let hiddenCount = 0;
@@ -1226,7 +1232,7 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// User interaction events
+// --- User interaction events ---
 function isMobile() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
