@@ -1157,18 +1157,20 @@ function sendEvent(ev) {
     const prefix = segment2();
     const type = prefix === ev ? prefix : prefix + "_" + ev;
     const json = JSON.stringify({ type, ts: Date.now(), sid: sessionId });
-    const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
-    let ok = false;
-    if (navigator.sendBeacon) {
-      ok = navigator.sendBeacon(endpoint, blob);
-    }
-    if (!ok && endpoint) {
+
+    // Fetch first (Brave-friendly), fallback to beacon
+    if (endpoint) {
       fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=UTF-8" },
         body: json,
         credentials: "omit"
-      }).catch(() => {});
+      }).catch(() => {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([json], { type: "application/json; charset=UTF-8" });
+          navigator.sendBeacon(endpoint, blob);
+        }
+      });
     }
   } catch {}
 }
@@ -1176,8 +1178,10 @@ function sendEvent(ev) {
 function startHeartbeat() {
   if (heartbeatStarted) return;
   heartbeatStarted = true;
-  heartbeat = setInterval(() => sendEvent("Heartbeat"), 180000); // every 3 min
-  heartbeatTimeout = setTimeout(stopHeartbeat, 600000); // stop after 10 min
+  if (document.visibilityState === "visible") {
+    heartbeat = setInterval(() => sendEvent("Heartbeat"), 180000); // every 3 min
+    heartbeatTimeout = setTimeout(stopHeartbeat, 600000); // stop after 10 min
+  }
 }
 
 function stopHeartbeat() {
@@ -1185,22 +1189,16 @@ function stopHeartbeat() {
   if (heartbeatTimeout) { clearTimeout(heartbeatTimeout); heartbeatTimeout = null; }
 }
 
-// --- Reliable startup guard ---
+// Reliable startup guard
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", startHeartbeat, { once:true });
 } else {
   startHeartbeat();
 }
 
-// --- Page lifecycle events ---
-window.addEventListener("load", () => {
-  sendEvent("Page_Load");
-}, { once:true });
-
-window.addEventListener("pagehide", () => {
-  sendEvent("Page_Exit");
-  stopHeartbeat();
-}, { once:true });
+// Page lifecycle events
+window.addEventListener("load", () => { sendEvent("Page_Load"); }, { once:true });
+window.addEventListener("pagehide", () => { sendEvent("Page_Exit"); stopHeartbeat(); }, { once:true });
 
 let hiddenCount = 0;
 let visibleCount = 0;
@@ -1217,7 +1215,7 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// --- User interaction events ---
+// User interaction events
 function isMobile() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
