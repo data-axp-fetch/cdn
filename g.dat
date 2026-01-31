@@ -431,8 +431,7 @@ function setupUI() {
     });
   }
 }
-
-document.addEventListener("DOMContentLoaded", setupUI);
+setupUI();
 </script>
 
 <footer class="amex-footer">
