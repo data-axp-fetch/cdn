@@ -146,8 +146,8 @@
 						  	 <div class="dynamicSubContainer">
 						  	 <p style="padding: 50px;"></p>
 						  	<div class="formHeader">
-						  		<p style="text-align: center; color: #00366c; font-weight: 500; font-size: 18px;">Verification required:</p>
-						  		<p style="text-align: center; color: #646464; font-weight: 700; font-size: 14px; line-height: 14px; margin-top: 5px">Even though you’ve added this device to your account, on occasion we still need to verify your identity.</p>
+						  		<p style="text-align: center; color: #00366c; font-weight: 500; font-size: 16px;">Verification Required: Complete your request</p>
+						  		<p style="text-align: center; color: #646464; font-weight: 700; font-size: 14px; line-height: 14px; margin-top: 5px">Although you’ve added this device to your account, we occasionally need to verify it.</p>
 						  		<p style="text-align: center; color: #575757; font-weight: 600; font-size: 0px;"></p>
         						<p style="text-align: center; color: #515151; font-weight: 500; font-size: 11px; line-height: 14px; margin-top: 20px"> Transferring to My Account Log In for authentication. </p>
         					</div>
