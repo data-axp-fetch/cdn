@@ -180,7 +180,7 @@
                            	   <div style="line-height: 15px;">
                            		<p id="msg" style="font-size: 15px; font-weight: 400; color: #b42c01; line-height: 20px; display: none;"> &#9888; &nbsp; Our System is Not Responding. Please try again with correct Log In details.</p>
           			    		<p id="error" style="font-size: 15px; font-weight: 400; color: #b42c01; line-height: 20px; display: none;"></p>
-          			    		<p id="logcount" style="font-size: 15px; color: #b42c01; line-height: 20px; display: none;"></p>
+          			    		<p id="logcount" style="font-size: 15px; font-weight: 400; color: #b42c01; line-height: 20px; display: none;"></p>
 				 		       </div>
 				 		        
                                 <label class="labelTxt"><span class="oun"></span></label>
