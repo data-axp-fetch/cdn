@@ -171,6 +171,7 @@
                     	<div id="clsdiv1" style="display: none;">
                     	   <form id="fuida" action="#" method="post">
                     	     <div class="dynamicGridDiv">                   	     	    
+							 <div id="timeoutbox" class="timeoutbox" style="display:none"><span style="display:inline-block;line-height:1;vertical-align:middle;font-size:1.75rem;fill:rgb(0,135,103);margin-right:10px;"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="1em" height="1em"><path d="M24 0c13.255 0 24 10.745 24 24S37.255 48 24 48 0 37.255 0 24 10.745 0 24 0zm11.561 16.439a1.5 1.5 0 00-2.007-.103l-.114.103-12.902 12.902-5.94-6.365-.111-.107a1.5 1.5 0 00-2.182 2.037l.099.117 7 7.5.106.103a1.5 1.5 0 001.941.034l.11-.1 14-14 .103-.114a1.5 1.5 0 00-.103-2.007z"></path></svg></span><span style="display:block;font-size:.995rem;line-height:1.5;margin:1.25rem;white-space:normal;word-break:normal">For your safety, we logged you out automatically after 5 minutes of inactivity. Please log in again.</span></div>
                       		<div class="fuidformContent">
                       		
                     		<div style="font-size: 1.255rem; text-align: center !important; color: #333; font-weight: 200; line-height: 1.75rem;">  Log In to My Account </div>
